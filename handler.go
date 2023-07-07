@@ -1,4 +1,4 @@
-package main
+package m3u8_downloader
 
 import (
 	"context"

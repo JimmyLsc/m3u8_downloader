@@ -8,3 +8,10 @@ func GenSuccessBaseResp() *model.BaseResp {
 		Message: "Success",
 	}
 }
+
+func GenParamErrorResp() *model.BaseResp {
+	return &model.BaseResp{
+		Code:    1,
+		Message: "Param Error",
+	}
+}
