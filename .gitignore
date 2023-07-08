@@ -22,3 +22,8 @@ go.work
 
 .idea
 go.sum
+
+.cache
+video
+
+handler_test.go

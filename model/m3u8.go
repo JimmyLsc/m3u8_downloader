@@ -10,6 +10,8 @@ type M3U8Info struct {
 }
 
 type EncryptionInfo struct {
-	Algo string `json:"algo,required"`
-	Key  string `json:"key,required"`
+	Method string `json:"method,required"`
+	Key    string `json:"key,required"`
+	URI    string `json:"uri,required"`
+	IV     string `json:"iv,required"`
 }

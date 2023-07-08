@@ -1,8 +1,10 @@
 package util
 
-import "github.com/bytedance/sonic"
+import (
+	"encoding/json"
+)
 
 func GenJsonLog(i interface{}) string {
-	result, _ := sonic.MarshalString(i)
-	return result
+	result, _ := json.Marshal(i)
+	return string(result)
 }

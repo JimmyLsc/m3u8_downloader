@@ -30,13 +30,14 @@ func (d *DownloaderHandler) Run() {
 	}
 	ctx := d.Ctx
 	srcUrl := d.Req.SrcURL
-	info, err := logic.GetM3U8Info(ctx, srcUrl)
+	info, err := logic.GetM3U8Info(ctx, srcUrl, make(map[string]string))
 	if err != nil {
 		log.Errorf("DownloaderHandler error, err: %v", err)
+		return
 	}
 	info.Name = d.Req.SrcName
 	info.ShortName = *d.Req.SrcShortName
-	log.Infof("info: %v", util.GenJsonLog(info))
+	logic.DownloadVideo(ctx, info, *d.Req.CachePath, *d.Req.FilePath, *d.Req.WorkerNum)
 }
 
 func (d *DownloaderHandler) checkParam() bool {
@@ -56,6 +57,11 @@ func (d *DownloaderHandler) checkParam() bool {
 	if d.Req.FilePath == nil || *(d.Req.FilePath) == "" {
 		filePath := "./video"
 		d.Req.FilePath = &(filePath)
+	}
+
+	if d.Req.WorkerNum == nil || *(d.Req.WorkerNum) == 0 {
+		workerNum := int64(12)
+		d.Req.WorkerNum = &(workerNum)
 	}
 	return true
 }
