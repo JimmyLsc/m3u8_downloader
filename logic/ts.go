@@ -59,7 +59,7 @@ func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, w
 }
 
 func DownloadsTS(ctx context.Context, url, cachePath, tsName string, encrypt *model.EncryptionInfo, header map[string]string) error {
-	resp, err := util.HttpGet(ctx, url, header)
+	resp, err := util.GetHttpClient().HttpGet(ctx, url, header)
 	if err != nil {
 		log.Errorf("DownloadTS error, err:%v", err)
 		return err

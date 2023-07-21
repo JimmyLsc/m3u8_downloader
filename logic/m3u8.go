@@ -15,7 +15,7 @@ import (
 )
 
 func GetM3U8Info(ctx context.Context, srcURL string, header map[string]string) (*model.M3U8Info, error) {
-	resp, err := util.HttpGet(ctx, srcURL, header)
+	resp, err := util.GetHttpClient().HttpGet(ctx, srcURL, header)
 	if err != nil {
 		log.Errorf("GetM3U8Info error, err: %v", err)
 		return nil, err
@@ -110,7 +110,7 @@ func parseEncryption(ctx context.Context, info *model.M3U8Info, content string) 
 			info.EncryptionInfo.Key = strings.Trim(encryptMap["KEY"], "\"")
 		}
 		if len(info.EncryptionInfo.Key) == 0 {
-			resp, err := util.HttpGet(ctx, info.RootURL+"/"+info.EncryptionInfo.URI, make(map[string]string))
+			resp, err := util.GetHttpClient().HttpGet(ctx, info.RootURL+"/"+info.EncryptionInfo.URI, make(map[string]string))
 			if err != nil {
 				log.Errorf("parseM3U8 error, err: %v", err)
 				return err
@@ -133,7 +133,6 @@ func DownloadVideo(ctx context.Context, info *model.M3U8Info, cachePath, videoPa
 		return err
 	}
 	if err := MDownloadsTS(ctx, info, cacheDir, workNum); err != nil {
-
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
