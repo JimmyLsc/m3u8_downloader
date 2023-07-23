@@ -25,7 +25,7 @@ func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, w
 		close(done)
 	}()
 	var wg sync.WaitGroup
-	for index, URL := range info.TsURLs {
+	for index, URL := range info.TsURLs[:len(info.TsURLs)-1] {
 		workChan <- urlItem{
 			Index: index,
 			URL:   URL,

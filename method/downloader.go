@@ -37,7 +37,7 @@ func (d *DownloaderHandler) Run() {
 	}
 	info.Name = d.Req.SrcName
 	info.ShortName = *d.Req.SrcShortName
-	logic.DownloadVideo(ctx, info, *d.Req.CachePath, *d.Req.FilePath, *d.Req.WorkerNum)
+	_ = logic.DownloadVideo(ctx, info, *d.Req.CachePath, *d.Req.FilePath, *d.Req.WorkerNum)
 }
 
 func (d *DownloaderHandler) checkParam() bool {
