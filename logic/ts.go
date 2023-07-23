@@ -110,6 +110,7 @@ func DownloadsTS(ctx context.Context, url, cachePath, tsName string, encrypt *mo
 func CombineTS(ctx context.Context, info *model.M3U8Info, cachePath string, videoURL string) error {
 	log.Info("Start Combine")
 	outFile, err := os.Create(videoURL)
+	defer outFile.Close()
 	if err != nil {
 		log.Errorf("CombineTS error, err:%v", err)
 		return err
@@ -126,6 +127,7 @@ func CombineTS(ctx context.Context, info *model.M3U8Info, cachePath string, vide
 			log.Errorf("CombineTS error, err:%v", err)
 			return err
 		}
+		_ = tsFile.Close()
 		_, err = outFile.Write(data)
 		if err != nil {
 			log.Errorf("CombineTS error, err:%v", err)
