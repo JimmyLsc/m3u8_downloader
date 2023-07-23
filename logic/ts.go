@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/JimmyLsc/m3u8_downloader/model"
 	"github.com/JimmyLsc/m3u8_downloader/util"
+	"github.com/avast/retry-go/v4"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -41,7 +42,12 @@ func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, w
 				case <-done:
 					return
 				case item := <-workChan:
-					err = DownloadsTS(ctx, item.URL, cachePath, strconv.Itoa(item.Index)+".ts", info.EncryptionInfo, nil)
+					err = retry.Do(
+						func() error {
+							return DownloadsTS(ctx, item.URL, cachePath, strconv.Itoa(item.Index)+".ts", info.EncryptionInfo, nil)
+						},
+						retry.Attempts(3),
+					)
 					if err != nil {
 						log.Errorf("DownloadTS error, err:%v", err)
 					}
@@ -59,7 +65,13 @@ func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, w
 }
 
 func DownloadsTS(ctx context.Context, url, cachePath, tsName string, encrypt *model.EncryptionInfo, header map[string]string) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Errorf("DownloadTS panic, retry, err:%v", err)
+		}
+	}()
 	resp, err := util.GetHttpClient().HttpGet(ctx, url, header)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Errorf("DownloadTS error, err:%v", err)
 		return err
