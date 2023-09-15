@@ -11,7 +11,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func GetM3U8Info(ctx context.Context, srcURL string, header map[string]string) (*model.M3U8Info, error) {
@@ -132,7 +131,9 @@ func DownloadVideo(ctx context.Context, info *model.M3U8Info, cachePath, videoPa
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
-	if err := MDownloadsTS(ctx, info, cacheDir, workNum); err != nil {
+	urlNum := len(info.TsURLs)
+	finishChan := make(chan int, urlNum)
+	if err := MDownloadsTS(ctx, info, cacheDir, workNum, finishChan); err != nil {
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
@@ -144,7 +145,9 @@ func DownloadVideo(ctx context.Context, info *model.M3U8Info, cachePath, videoPa
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
-	time.Sleep(5 * time.Second)
+	for i := 0; i < urlNum; i++ {
+		<-finishChan
+	}
 	if err := os.RemoveAll(cacheDir); err != nil {
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err

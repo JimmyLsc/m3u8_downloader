@@ -18,7 +18,7 @@ type urlItem struct {
 	URL   string
 }
 
-func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, workerNum int64) error {
+func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, workerNum int64, finishChan chan int) error {
 	workChan := make(chan urlItem, len(info.TsURLs))
 	done := make(chan int, workerNum)
 	defer func() {
@@ -40,6 +40,7 @@ func MDownloadsTS(ctx context.Context, info *model.M3U8Info, cachePath string, w
 			for {
 				select {
 				case <-done:
+					finishChan <- 1
 					return
 				case item := <-workChan:
 					err = retry.Do(
