@@ -131,8 +131,7 @@ func DownloadVideo(ctx context.Context, info *model.M3U8Info, cachePath, videoPa
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
-	urlNum := len(info.TsURLs)
-	finishChan := make(chan int, urlNum)
+	finishChan := make(chan int, workNum)
 	if err := MDownloadsTS(ctx, info, cacheDir, workNum, finishChan); err != nil {
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
@@ -145,7 +144,7 @@ func DownloadVideo(ctx context.Context, info *model.M3U8Info, cachePath, videoPa
 		log.Errorf("DownloadVideo error, err: %v", err)
 		return err
 	}
-	for i := 0; i < urlNum; i++ {
+	for i := 0; i < int(workNum); i++ {
 		<-finishChan
 	}
 	if err := os.RemoveAll(cacheDir); err != nil {
